@@ -1,8 +1,8 @@
 replicaCount: 2
 
 image:
-  imageName: django-app:1.46_clean
-  imagePullPolicy: Never
+  imageName: 400375466624.dkr.ecr.us-east-1.amazonaws.com/disablak/django-app:latest #django-app:1.46_clean
+  imagePullPolicy: IfNotPresent #Never
 
 config:
   DEBUG: "True"
@@ -21,4 +21,6 @@ env:
   - name: DEVELOPMENT_MODE
     value: "False"
   - name: CSRF_TRUSTED_ORIGINS
-    value: "http://localhost"
+    value: "*"
+  - name: DJANGO_ALLOWED_HOSTS
+    value: "*"
