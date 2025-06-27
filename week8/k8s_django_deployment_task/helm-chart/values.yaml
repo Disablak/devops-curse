@@ -1,4 +1,5 @@
 replicaCount: 2
+host: mydjangoapp.com
 
 image:
   imageName: 400375466624.dkr.ecr.us-east-1.amazonaws.com/disablak/django-app:latest #django-app:1.47_sessions

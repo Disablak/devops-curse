@@ -1,0 +1,31 @@
+environments:
+  production:
+    secrets:
+    - helm-chart/secrets.yaml
+
+---
+repositories:
+  - name: jetstack
+    url: https://charts.jetstack.io
+  - name: eks
+    url: https://aws.github.io/eks-charts
+
+releases:
+  - name: aws-load-balancer-controller
+    namespace: kube-system
+    chart: eks/aws-load-balancer-controller
+    version: 1.13.3
+    createNamespace: false
+    values:
+      - clusterName: my-cluster
+      - serviceAccount:
+          create: false
+          name: aws-load-balancer-controller
+
+  - name: helm-chart
+    namespace: default
+    chart: ./helm-chart
+    values:
+      - helm-chart/values.yaml
+    secrets:
+      - helm-chart/secrets.enc.yaml
