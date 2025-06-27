@@ -18,7 +18,7 @@ spec:
           image: {{ .Values.image.imageName }}
           imagePullPolicy: {{ .Values.image.imagePullPolicy }}
           ports:
-            - containerPort: 8000
+            - containerPort: 8080
           resources:
             requests:
               cpu: "100m"
