@@ -15,12 +15,13 @@ releases:
     namespace: kube-system
     chart: eks/aws-load-balancer-controller
     version: 1.13.3
-    createNamespace: false
+    installed: true
     values:
-      - clusterName: my-cluster
+      - clusterName: my-new-k8s-cluster
       - serviceAccount:
-          create: false
+          create: true
           name: aws-load-balancer-controller
+      - region: us-east-1
 
   - name: helm-chart
     namespace: default
