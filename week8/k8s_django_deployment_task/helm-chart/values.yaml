@@ -1,12 +1,13 @@
 replicaCount: 2
 host: back2.cloud
+email: verchinskiymax@gmail.com
 
 image:
-  imageName: 400375466624.dkr.ecr.us-east-1.amazonaws.com/disablak/django-app:latest #django-app:1.47_sessions
-  imagePullPolicy: IfNotPresent #Never
+  imageName: 400375466624.dkr.ecr.us-east-1.amazonaws.com/disablak/django-app:latest
+  imagePullPolicy: IfNotPresent
 
 config:
-  DEBUG: "True"
+  DEBUG: "False"
   DEVELOPMENT_MODE: "False"
   CSRF_TRUSTED_ORIGINS: "http://*"
   DJANGO_ALLOWED_HOSTS: "*"

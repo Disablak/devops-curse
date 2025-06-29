@@ -1,12 +1,12 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: my-app-ingress
+  name: {{ .Chart.Name }}-ingress
   namespace: {{ .Release.Namespace }}
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
-    cert-manager.io/cluster-issuer: letsencrypt-test
+    cert-manager.io/cluster-issuer: {{ .Chart.Name }}-letsencrypt
 spec:
   ingressClassName: alb
   tls:
@@ -21,6 +21,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: my-app-service
+                name: {{ .Chart.Name }}-service
                 port:
                   number: 80
