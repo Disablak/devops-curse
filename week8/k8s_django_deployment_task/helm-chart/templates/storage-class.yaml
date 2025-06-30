@@ -1,9 +1,10 @@
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: efs-sc
+  name: {{ .Chart.Name }}-sc
+  namespace: {{ .Release.Namespace }}
 provisioner: efs.csi.aws.com
 parameters:
-  provisioningMode: efs-ap          # <-- ✅ Required! "efs-ap" means using EFS Access Points
-  fileSystemId: fs-0570dd43d71ee7312         # <-- ✅ Your EFS file system ID
-  directoryPerms: "700"            # Optional: permissions for new directory
+  provisioningMode: efs-ap
+  fileSystemId: {{ .Values.pv.fsId }}
+  directoryPerms: "700"

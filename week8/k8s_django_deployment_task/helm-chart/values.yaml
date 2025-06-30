@@ -2,6 +2,12 @@ replicaCount: 2
 host: back2.cloud
 email: verchinskiymax@gmail.com
 
+pv:
+  fsId: fs-0570dd43d71ee7312
+  capacity: 5Gi
+  accessMode: ReadWriteMany
+
+
 image:
   imageName: 400375466624.dkr.ecr.us-east-1.amazonaws.com/disablak/django-app:latest
   imagePullPolicy: IfNotPresent
