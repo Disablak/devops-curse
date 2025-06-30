@@ -23,14 +23,6 @@ releases:
           name: aws-load-balancer-controller
       - region: us-east-1
 
-  - name: cert-manager
-    namespace: cert-manager
-    createNamespace: true
-    chart: jetstack/cert-manager
-    version: v1.14.4
-    values:
-      - installCRDs: true
-
   - name: helm-chart
     namespace: default
     chart: ./helm-chart

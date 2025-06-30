@@ -6,16 +6,11 @@ metadata:
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
-    cert-manager.io/cluster-issuer: {{ .Chart.Name }}-letsencrypt
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
 spec:
   ingressClassName: alb
-  tls:
-    - hosts:
-        - {{ .Values.host }}
-      secretName: tls-secret
   rules:
-    - host: {{ .Values.host }}
-      http:
+    - http:
         paths:
           - path: /
             pathType: Prefix
