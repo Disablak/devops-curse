@@ -1,28 +1,10 @@
-# environments:
-#   production:
-#     secrets:
-#     - helm-chart/secrets.yaml
-
-# ---
 repositories:
   - name: eks
     url: https://aws.github.io/eks-charts
 
 releases:
-  # - name: aws-load-balancer-controller
-  #   namespace: kube-system
-  #   chart: eks/aws-load-balancer-controller
-  #   version: 1.13.3
-  #   installed: true
-  #   values:
-  #     - clusterName: my-k8s-cluster
-  #     - serviceAccount:
-  #         create: true
-  #         name: aws-load-balancer-controller
-  #     - region: us-east-1
-
   - name: disablak-chart
-    namespace: default
+    namespace: my-space
     chart: ./disablak-chart
     values:
       - disablak-chart/values.yaml

@@ -31,3 +31,12 @@ spec:
                 name: {{ .Chart.Name }}-config
             - secretRef:
                 name: {{ .Chart.Name }}-secret
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 100 # UID of appuser
+            seccompProfile:
+              type: RuntimeDefault
+            capabilities:
+              drop:
+                - ALL
