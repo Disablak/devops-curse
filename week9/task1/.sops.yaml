@@ -1,0 +1,3 @@
+creation_rules:
+  - encrypted_regex: '^(.*)$'
+    age: age1lv9al5v7egq73rz56c9y6vhtwt88rzahyzt5u7r69864wt9vze3qa7mhz2
