@@ -1,0 +1,9 @@
+apiVersion: dashboard.kubedb.com/v1alpha1
+kind: ElasticsearchDashboard
+metadata:
+  name: es-cluster-dashboard
+  namespace: my-space
+spec:
+  databaseRef:
+    name: es-cluster
+  deletionPolicy: WipeOut

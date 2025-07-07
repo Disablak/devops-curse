@@ -1,0 +1,47 @@
+# Cluster topology
+replicas: 3
+
+# Node roles and resources
+esConfig:
+  elasticsearch.yml: |
+    node.store.allow_mmap: false
+
+# JVM options
+esJavaOpts: "-Xmx1g -Xms1g"
+
+# Resources
+resources:
+  requests:
+    cpu: "500m"
+    memory: "2Gi"
+  limits:
+    cpu: "1"
+    memory: "2Gi"
+
+# Persistent storage
+volumeClaimTemplate:
+  accessModes: [ "ReadWriteOnce" ]
+  resources:
+    requests:
+      storage: 30Gi
+
+# Service type
+service:
+  type: ClusterIP
+
+# Security context
+podSecurityContext:
+  fsGroup: 1000
+  runAsUser: 1000
+
+# Probes
+protocol: http
+httpPort: 9200
+transportPort: 9300
+
+# Enable anti-affinity to spread nodes
+antiAffinity: "soft"
+
+# Update strategy
+elasticsearch:
+  updateStrategy: RollingUpdate
