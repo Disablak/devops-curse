@@ -1,0 +1,29 @@
+- name: Ensure destination directory exists
+  ansible.builtin.file:
+    path: "{{ dest_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Copy CA certificate to node
+  ansible.builtin.copy:
+    src: "{{ path_to_certs }}ca.crt"
+    dest: "{{ dest_dir }}/ca.crt"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Copy node certificate
+  ansible.builtin.copy:
+    src: "{{ path_to_certs }}{{ inventory_hostname }}.crt"
+    dest: "{{ dest_dir }}/kubelet.crt"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Copy node private key
+  ansible.builtin.copy:
+    src: "{{ path_to_certs }}{{ inventory_hostname }}.key"
+    dest: "{{ dest_dir }}/kubelet.key"
+    owner: root
+    group: root
+    mode: '0600'

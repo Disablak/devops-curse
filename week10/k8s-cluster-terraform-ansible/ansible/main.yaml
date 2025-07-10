@@ -1,14 +1,45 @@
-- hosts: machines
-  become: true
-  vars:
-    hosts_block: "{{ lookup('file', 'hosts') }}"
-  roles:
-    - role: configuring
-    - role: add-hosts
+# - name: Configurating machines
+#   hosts: machines
+#   become: true
+#   vars:
+#     hosts_block: "{{ lookup('file', 'hosts') }}"
+#   roles:
+#     - role: configuring
+#     - role: add-hosts
 
-- hosts: jumpbox
+# - name: Configurating jumpbox
+#   hosts: jumpbox
+#   become: true
+#   vars:
+#     hosts_block: "{{ lookup('file', 'hosts') }}"
+#   roles:
+#     - role: add-hosts
+
+# - name: Generate certificates
+#   hosts: jumpbox
+#   become: true
+#   vars:
+#     path_to_certs: "./certs/"
+#     ca_key_path: "./certs/ca.key"
+#     ca_cert_path: "./certs/ca.crt"
+#     ca_config_path: "./certs/ca.conf"
+#     certs:
+#       - admin
+#       - node-0
+#       - node-1
+#       - kube-proxy
+#       - kube-scheduler
+#       - kube-controller-manager
+#       - kube-api-server
+#       - service-accounts
+#   roles:
+#     - role: generate-certs
+
+- name: Distribute certificates to nodes
+  hosts: nodes
   become: true
   vars:
-    hosts_block: "{{ lookup('file', 'hosts') }}"
+    dest_dir: "/var/lib/kubelet/"
+    path_to_certs: "./certs/" # copy
   roles:
-    - role: add-hosts
+    - role: distribute-certs-to-nodes

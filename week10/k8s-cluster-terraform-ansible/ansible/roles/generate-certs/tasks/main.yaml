@@ -1,0 +1,40 @@
+- name: Generate private key
+  community.crypto.openssl_privatekey:
+    path: "{{ ca_key_path }}"
+    size: 4096
+    type: RSA
+
+- name: Generate self-signed CA certificate
+  community.crypto.x509_certificate:
+    path: "{{ ca_cert_path }}"
+    privatekey_path: "{{ ca_key_path }}"
+    provider: selfsigned
+    selfsigned_digest: sha512
+
+- name: Generate private key for each cert
+  community.crypto.openssl_privatekey:
+    path: "{{ path_to_certs }}{{ item }}.key"
+    size: 4096
+    type: RSA
+  loop: "{{ certs }}"
+
+- name: Generate CSR for each cert
+  community.crypto.openssl_csr:
+    path: "{{ path_to_certs }}{{ item }}.csr"
+    privatekey_path: "{{ path_to_certs }}{{ item }}.key"
+    common_name: "{{ item }}"
+    extended_key_usage:
+      - clientAuth
+      - serverAuth
+  loop: "{{ certs }}"
+
+- name: Sign certificate for each cert
+  community.crypto.x509_certificate:
+    path: "{{ path_to_certs }}{{ item }}.crt"
+    csr_path: "{{ path_to_certs }}{{ item }}.csr"
+    privatekey_path: "{{ path_to_certs }}{{ item }}.key"
+    provider: ownca
+    ownca_path: "{{ ca_cert_path }}"
+    ownca_privatekey_path: "{{ ca_key_path }}"
+    # copy_extensions: copyall
+  loop: "{{ certs }}"
