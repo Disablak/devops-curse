@@ -1,0 +1,14 @@
+- hosts: machines
+  become: true
+  vars:
+    hosts_block: "{{ lookup('file', 'hosts') }}"
+  roles:
+    - role: configuring
+    - role: add-hosts
+
+- hosts: jumpbox
+  become: true
+  vars:
+    hosts_block: "{{ lookup('file', 'hosts') }}"
+  roles:
+    - role: add-hosts

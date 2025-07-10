@@ -1,0 +1,29 @@
+- name: Permit root login over SSH
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?PermitRootLogin'
+    line: 'PermitRootLogin yes'
+    state: present
+    backrefs: true
+
+- name: Restart SSH service
+  ansible.builtin.service:
+    name: sshd
+    state: restarted
+
+- name: Update /etc/hosts line for 127.0.1.1
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    regexp: '^127\.0\.1\.1'
+    line: "127.0.1.1\t{{ fqdn }} {{ host_short }}"
+    state: present
+
+- name: Set hostname
+  ansible.builtin.hostname:
+    name: "{{ host_short }}"
+
+- name: Restart systemd-hostnamed
+  ansible.builtin.systemd:
+    name: systemd-hostnamed
+    state: restarted
+    daemon_reload: true

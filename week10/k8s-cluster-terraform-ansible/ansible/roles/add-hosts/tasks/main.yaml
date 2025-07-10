@@ -1,0 +1,5 @@
+- name: Add custom hosts block
+  ansible.builtin.blockinfile:
+    path: /etc/hosts
+    block: "{{ hosts_block }}"
+    marker: "# {mark} Kubernetes The Hard Way"
