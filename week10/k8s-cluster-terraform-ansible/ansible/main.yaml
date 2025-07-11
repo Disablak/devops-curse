@@ -15,47 +15,114 @@
 #   roles:
 #     - role: add-hosts
 
-- name: Generate certificates
-  hosts: jumpbox
-  become: true
-  vars:
-    path_to_certs: "./certs/"
-    ca_key_path: "./certs/ca.key"
-    ca_cert_path: "./certs/ca.crt"
-    ca_config_path: "./certs/ca.conf"
-    certs:
-      - admin
-      - node-0
-      - node-1
-      - kube-proxy
-      - kube-scheduler
-      - kube-controller-manager
-      - kube-api-server
-      - service-accounts
-  roles:
-    - role: generate-certs
+# - name: Generate certificates
+#   hosts: jumpbox
+#   become: true
+#   vars:
+#     path_to_certs: "./certs/"
+#     ca_key_path: "./certs/ca.key"
+#     ca_cert_path: "./certs/ca.crt"
+#     ca_config_path: "./certs/ca.conf"
+#     certs:
+#       - admin
+#       - node-0
+#       - node-1
+#       - kube-proxy
+#       - kube-scheduler
+#       - kube-controller-manager
+#       - kube-api-server
+#       - service-accounts
+#   roles:
+#     - role: generate-certs
 
 # - name: Distribute certificates to nodes
 #   hosts: nodes
 #   become: true
 #   vars:
 #     dest_dir: "/var/lib/kubelet/"
-#     path_to_certs: "./certs/" # copy
+#     path_to_certs: "./certs/" # dublicate
 #   roles:
 #     - role: distribute-certs-to-nodes
 
-- name: Distribute certificates to server
-  hosts: server
+# - name: Distribute certificates to server
+#   hosts: server
+#   become: true
+#   vars:
+#     dest_dir: "/var/lib/kubelet/"
+#     path_to_certs: "./certs/" # dublicate
+#     certs:
+#       - ca.key
+#       - ca.crt
+#       - kube-api-server.key
+#       - kube-api-server.crt
+#       - service-accounts.key
+#       - service-accounts.crt
+#   roles:
+#     - role: distribute-certs-to-server
+
+# Kubernetes configuration files
+- name: Kube configuration nodes
+  hosts: jumpbox
   become: true
   vars:
-    dest_dir: "/var/lib/kubelet/"
-    path_to_certs: "./certs/" # copy
-    certs:
-      - ca.key
-      - ca.crt
-      - kube-api-server.key
-      - kube-api-server.crt
-      - service-accounts.key
-      - service-accounts.crt
+    path_to_certs: "./certs/" # dublicate
+    server: https://server.kubernetes.local:6443
+    user: "system:"
+    system: "node:"
+    elements:
+      - node-0
+      - node-1
   roles:
-    - role: distribute-certs-to-server
+    - role: kube-configuration-files
+
+- name: Kube configuration kube-proxy
+  hosts: jumpbox
+  become: true
+  vars:
+    path_to_certs: "./certs/" # dublicate
+    server: https://server.kubernetes.local:6443
+    user: "system:"
+    system: ""
+    elements:
+      - kube-proxy
+  roles:
+    - role: kube-configuration-files
+
+- name: Kube configuration kube-controller-manager
+  hosts: jumpbox
+  become: true
+  vars:
+    path_to_certs: "./certs/" # dublicate
+    server: https://server.kubernetes.local:6443
+    user: "system:"
+    system: ""
+    elements:
+      - kube-controller-manager
+  roles:
+    - role: kube-configuration-files
+
+- name: Kube configuration kube-scheduler
+  hosts: jumpbox
+  become: true
+  vars:
+    path_to_certs: "./certs/" # dublicate
+    server: https://server.kubernetes.local:6443
+    user: "system:"
+    system: ""
+    elements:
+      - kube-scheduler
+  roles:
+    - role: kube-configuration-files
+
+- name: Kube configuration admin
+  hosts: jumpbox
+  become: true
+  vars:
+    path_to_certs: "./certs/" # dublicate
+    server: https://127.0.0.1:6443
+    user: ""
+    system: ""
+    elements:
+      - admin
+  roles:
+    - role: kube-configuration-files
