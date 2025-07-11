@@ -1,0 +1,65 @@
+- name: Kube configuration nodes
+  hosts: jumpbox
+  become: true
+  vars:
+    path_to_certs: "./certs/" # dublicate
+    server: https://server.kubernetes.local:6443
+    user: "system:"
+    system: "node:"
+    elements:
+      - node-0
+      - node-1
+  roles:
+    - role: kube-configuration-files
+
+- name: Kube configuration kube-proxy
+  hosts: jumpbox
+  become: true
+  vars:
+    path_to_certs: "./certs/" # dublicate
+    server: https://server.kubernetes.local:6443
+    user: "system:"
+    system: ""
+    elements:
+      - kube-proxy
+  roles:
+    - role: kube-configuration-files
+
+- name: Kube configuration kube-controller-manager
+  hosts: jumpbox
+  become: true
+  vars:
+    path_to_certs: "./certs/" # dublicate
+    server: https://server.kubernetes.local:6443
+    user: "system:"
+    system: ""
+    elements:
+      - kube-controller-manager
+  roles:
+    - role: kube-configuration-files
+
+- name: Kube configuration kube-scheduler
+  hosts: jumpbox
+  become: true
+  vars:
+    path_to_certs: "./certs/" # dublicate
+    server: https://server.kubernetes.local:6443
+    user: "system:"
+    system: ""
+    elements:
+      - kube-scheduler
+  roles:
+    - role: kube-configuration-files
+
+- name: Kube configuration admin
+  hosts: jumpbox
+  become: true
+  vars:
+    path_to_certs: "./certs/" # dublicate
+    server: https://127.0.0.1:6443
+    user: ""
+    system: ""
+    elements:
+      - admin
+  roles:
+    - role: kube-configuration-files
