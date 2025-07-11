@@ -1,0 +1,8 @@
+- name: Copy each certificate file to ~/ on server
+  ansible.builtin.copy:
+    src: "{{ path_to_certs }}{{ item }}"
+    dest: "/root/{{ item }}"
+    owner: root
+    group: root
+    mode: '0600'
+  loop: "{{ certs }}"
