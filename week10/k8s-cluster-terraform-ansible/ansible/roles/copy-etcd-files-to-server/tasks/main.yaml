@@ -1,0 +1,80 @@
+- name: Ensure folder exist
+  ansible.builtin.file:
+    path: "{{ target_path }}"
+    state: directory
+    mode: '0755'
+
+- name: Copy files
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ target_path }}"
+    owner: root
+    group: root
+    mode: '0644'
+  loop: "{{ files }}"
+
+- name: Copy file to new location
+  ansible.builtin.copy:
+    src: "/{{ item }}"
+    dest: /usr/local/bin/
+    remote_src: true
+  loop:
+    - etcd
+    - etcdctl
+
+# - name: Remove old file
+#   ansible.builtin.file:
+#     path: "/{{ item }}"
+#     state: absent
+#   loop:
+#     - etcd
+#     - etcdctl
+
+- name: Ensure folders exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - /etc/etcd
+    - /var/lib/etcd
+
+- name: Copy ca.crt kube-api-server.key kube-api-server.crt to /etc/etcd/
+  ansible.builtin.copy:
+    src: "/{{ item }}"
+    dest: /etc/etcd/
+    remote_src: true
+  loop:
+    - ca.crt
+    - kube-api-server.key
+    - kube-api-server.crt
+
+- name: Copy etcd.service to /etc/systemd/system/
+  ansible.builtin.copy:
+    src: /etcd.service
+    dest: /etc/systemd/system/
+    remote_src: true
+
+- name: Ensure /usr/local/bin/etcd is executable
+  ansible.builtin.file:
+    path: /usr/local/bin/etcd
+    mode: '0755'
+
+- name: Ensure /usr/local/bin/etcdctl is executable
+  ansible.builtin.file:
+    path: /usr/local/bin/etcdctl
+    mode: '0755'
+
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Enable etcd service
+  ansible.builtin.systemd:
+    name: etcd
+    enabled: true
+
+- name: Start etcd service
+  ansible.builtin.systemd:
+    name: etcd
+    state: started

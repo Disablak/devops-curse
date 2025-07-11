@@ -31,7 +31,7 @@
   hosts: server
   become: true
   vars:
-    dest_dir: "/var/lib/kubelet/"
+    dest_dir: "/"
     path_to_certs: "./certs/" # dublicate
     certs:
       - ca.key

@@ -1,0 +1,12 @@
+- name: Move files for etcd
+  hosts: server
+  become: true
+  vars:
+    target_path: "/"
+    files:
+      - "./../kubernetes-the-hard-way/downloads/controller/etcd"
+      - "./../kubernetes-the-hard-way/downloads/client/etcdctl"
+      - "./../kubernetes-the-hard-way/units/etcd.service"
+  roles:
+    - role: copy-etcd-files-to-server
+

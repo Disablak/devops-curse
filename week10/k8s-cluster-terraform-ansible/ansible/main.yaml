@@ -1,4 +1,5 @@
 #- import_playbook: 03-compute-resource.yaml
 #- import_playbook: 04-certificate-authority.yaml
 #- import_playbook: 05-kube-configuration-files.yaml
-- import_playbook: 06-generate-data-enc-config-and-key.yaml
+#- import_playbook: 06-generate-data-enc-config-and-key.yaml
+- import_playbook: 07-bootstrapping-etcd.yaml
