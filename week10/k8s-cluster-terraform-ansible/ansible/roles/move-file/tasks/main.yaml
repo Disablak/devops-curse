@@ -1,0 +1,13 @@
+- name: Ensure folder exist
+  ansible.builtin.file:
+    path: "{{ target_path }}"
+    state: directory
+    mode: '0755'
+
+- name: Copy kube-proxy kubeconfig
+  ansible.builtin.copy:
+    src: "{{ source_path }}{{ file_name }}"
+    dest: "{{ target_path }}{{ file_name }}"
+    owner: root
+    group: root
+    mode: '0644'

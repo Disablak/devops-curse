@@ -1,0 +1,17 @@
+- name: Generate
+  hosts: localhost
+  become: true
+  vars:
+    config_path: "./certs/" # dublicate
+  roles:
+    - role: generate-data-enc-config-and-key
+
+- name: Move
+  hosts: server
+  become: true
+  vars:
+    source_path: "./certs/" # dublicate
+    target_path: "/"
+    file_name: encryption-config.yaml
+  roles:
+    - role: move-file
