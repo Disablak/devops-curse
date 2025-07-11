@@ -1,0 +1,24 @@
+- name: Ensure /var/lib/kube-proxy and /var/lib/kubelet exist
+  ansible.builtin.file:
+    path: "/var/lib/{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - kube-proxy
+    - kubelet
+
+- name: Copy kube-proxy kubeconfig
+  ansible.builtin.copy:
+    src: "{{ local_kubeconfig_dir }}kube-proxy.kubeconfig"
+    dest: "/var/lib/kube-proxy/kubeconfig"
+    owner: root
+    group: root
+    mode: '0600'
+
+- name: Copy host-specific kubeconfig
+  ansible.builtin.copy:
+    src: "{{ local_kubeconfig_dir }}{{ inventory_hostname }}.kubeconfig"
+    dest: "/var/lib/kubelet/kubeconfig"
+    owner: root
+    group: root
+    mode: '0600'

@@ -1,0 +1,10 @@
+- name: Copy kube-proxy kubeconfig
+  ansible.builtin.copy:
+    src: "{{ local_kubeconfig_dir }}{{ item }}"
+    dest: "/"
+    owner: root
+    group: root
+    mode: '0600'
+  loop:
+    - kube-controller-manager.kubeconfig
+    - kube-scheduler.kubeconfig

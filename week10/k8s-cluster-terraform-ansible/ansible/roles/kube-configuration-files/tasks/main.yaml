@@ -49,3 +49,10 @@
       - --kubeconfig={{ item }}.kubeconfig
     chdir: "{{ path_to_certs }}"
   loop: "{{ elements }}"
+
+- name: Change ownership of files
+  ansible.builtin.file:
+    path: "{{ path_to_certs }}{{ item }}.kubeconfig"
+    owner: "{{ lookup('env', 'USER') }}"
+    mode: '0600'
+  loop: "{{ elements }}"

@@ -63,3 +63,20 @@
       - admin
   roles:
     - role: kube-configuration-files
+
+# Move configs
+- name: Move kubeconfig to nodes
+  hosts: nodes
+  become: true
+  vars:
+    local_kubeconfig_dir: "./certs/" # dublicate
+  roles:
+    - role: move-kubeconfig-to-nodes
+
+- name: Move kubeconfig to server
+  hosts: server
+  become: true
+  vars:
+    local_kubeconfig_dir: "./certs/" # dublicate
+  roles:
+    - role: move-kubeconfig-to-server
