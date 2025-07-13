@@ -1,0 +1,104 @@
+- name: Ensure folders exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - /etc/kubernetes/config
+    - /var/lib/kubernetes/
+
+# Install the Kubernetes binaries:
+- name: Copy kube binaries to /usr/local/bin/
+  ansible.builtin.copy:
+    src: "/{{ item }}"
+    dest: /usr/local/bin/
+    remote_src: true
+    mode: '0744'
+  loop:
+    - kube-apiserver
+    - kube-controller-manager
+    - kube-scheduler
+    - kubectl
+
+# Configure the Kubernetes API Server
+- name: Copy files for API Server
+  ansible.builtin.copy:
+    src: "/{{ item }}"
+    dest: /var/lib/kubernetes/
+    remote_src: true
+    mode: '0744'
+  loop:
+    - ca.crt
+    - ca.key
+    - kube-api-server.key
+    - kube-api-server.crt
+    - service-accounts.key
+    - service-accounts.crt
+    - encryption-config.yaml
+
+- name: Create the kube-apiserver.service systemd unit file
+  ansible.builtin.copy:
+    src: /kube-apiserver.service
+    dest: /etc/systemd/system/kube-apiserver.service
+    mode: '0744'
+    remote_src: true
+
+# Configure the Kubernetes Controller Manager
+- name: Move the kube-controller-manager kubeconfig
+  ansible.builtin.copy:
+    src: /kube-controller-manager.kubeconfig
+    dest: /var/lib/kubernetes/
+    mode: '0744'
+    remote_src: true
+
+- name: Create the kube-controller-manager.service systemd unit file
+  ansible.builtin.copy:
+    src: /kube-controller-manager.service
+    dest: /etc/systemd/system/
+    mode: '0744'
+    remote_src: true
+
+# Configure the Kubernetes Scheduler
+- name: Move the kube-scheduler kubeconfig
+  ansible.builtin.copy:
+    src: /kube-scheduler.kubeconfig
+    dest: /var/lib/kubernetes/
+    mode: '0744'
+    remote_src: true
+
+- name: Create the kube-scheduler.yaml configuration file
+  ansible.builtin.copy:
+    src: /kube-scheduler.yaml
+    dest: /etc/kubernetes/config/
+    mode: '0744'
+    remote_src: true
+
+- name: Move the kube-scheduler kubeconfig
+  ansible.builtin.copy:
+    src: /kube-scheduler.service
+    dest: /etc/systemd/system/
+    mode: '0744'
+    remote_src: true
+
+# Start the Controller Services
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Enable services
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    enabled: true
+  loop:
+    - kube-apiserver
+    - kube-controller-manager
+    - kube-scheduler
+
+- name: Start services
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: started
+  loop:
+    - kube-apiserver
+    - kube-controller-manager
+    - kube-scheduler

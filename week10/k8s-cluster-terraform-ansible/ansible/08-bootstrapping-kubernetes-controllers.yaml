@@ -1,0 +1,19 @@
+- name: Move files for controll plane
+  hosts: server
+  become: true
+  vars:
+    target_path: "/"
+    files:
+      - "./../kubernetes-the-hard-way/downloads/controller/kube-apiserver"
+      - "./../kubernetes-the-hard-way/downloads/controller/kube-controller-manager"
+      - "./../kubernetes-the-hard-way/downloads/controller/kube-scheduler"
+      - "./../kubernetes-the-hard-way/downloads/client/kubectl"
+      - "./../kubernetes-the-hard-way/units/kube-apiserver.service"
+      - "./../kubernetes-the-hard-way/units/kube-controller-manager.service"
+      - "./../kubernetes-the-hard-way/units/kube-scheduler.service"
+      - "./../kubernetes-the-hard-way/configs/kube-scheduler.yaml"
+      - "./../kubernetes-the-hard-way/configs/kube-apiserver-to-kubelet.yaml"
+  roles:
+    - role: copy-many-files
+    - role: provisioning-kube-control-plane
+

@@ -6,5 +6,6 @@
     group: root
     mode: '0600'
   loop:
+    - admin.kubeconfig
     - kube-controller-manager.kubeconfig
     - kube-scheduler.kubeconfig

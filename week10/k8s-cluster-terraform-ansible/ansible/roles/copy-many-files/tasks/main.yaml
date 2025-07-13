@@ -1,0 +1,14 @@
+- name: Ensure folder exist
+  ansible.builtin.file:
+    path: "{{ target_path }}"
+    state: directory
+    mode: '0755'
+
+- name: Copy files
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ target_path }}"
+    owner: root
+    group: root
+    mode: '0744'
+  loop: "{{ files }}"

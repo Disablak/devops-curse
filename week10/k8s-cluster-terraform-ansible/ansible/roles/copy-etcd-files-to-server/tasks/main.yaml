@@ -1,23 +1,9 @@
-- name: Ensure folder exist
-  ansible.builtin.file:
-    path: "{{ target_path }}"
-    state: directory
-    mode: '0755'
-
-- name: Copy files
-  ansible.builtin.copy:
-    src: "{{ item }}"
-    dest: "{{ target_path }}"
-    owner: root
-    group: root
-    mode: '0644'
-  loop: "{{ files }}"
-
 - name: Copy file to new location
   ansible.builtin.copy:
     src: "/{{ item }}"
     dest: /usr/local/bin/
     remote_src: true
+    mode: '0755'
   loop:
     - etcd
     - etcdctl
@@ -44,6 +30,7 @@
     src: "/{{ item }}"
     dest: /etc/etcd/
     remote_src: true
+    mode: '0755'
   loop:
     - ca.crt
     - kube-api-server.key
@@ -54,15 +41,6 @@
     src: /etcd.service
     dest: /etc/systemd/system/
     remote_src: true
-
-- name: Ensure /usr/local/bin/etcd is executable
-  ansible.builtin.file:
-    path: /usr/local/bin/etcd
-    mode: '0755'
-
-- name: Ensure /usr/local/bin/etcdctl is executable
-  ansible.builtin.file:
-    path: /usr/local/bin/etcdctl
     mode: '0755'
 
 - name: Reload systemd daemon

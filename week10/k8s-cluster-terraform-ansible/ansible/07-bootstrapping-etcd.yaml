@@ -8,5 +8,6 @@
       - "./../kubernetes-the-hard-way/downloads/client/etcdctl"
       - "./../kubernetes-the-hard-way/units/etcd.service"
   roles:
+    - role: copy-many-files
     - role: copy-etcd-files-to-server
 
