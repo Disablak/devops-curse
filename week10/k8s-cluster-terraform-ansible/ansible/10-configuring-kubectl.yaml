@@ -1,0 +1,50 @@
+- name: Copy binaries
+  hosts: jumpbox
+  become: true
+  vars:
+    path_to_certs: "./certs/"
+  tasks:
+    - name: Set kubectl cluster config
+      ansible.builtin.command:
+        argv:
+          - kubectl
+          - config
+          - set-cluster
+          - kubernetes-the-hard-way
+          - --certificate-authority=ca.crt
+          - --embed-certs=true
+          - --server=https://server.kubernetes.local:6443
+        chdir: "{{ path_to_certs }}"
+
+    - name: Set kubectl set-credentials admin
+      ansible.builtin.command:
+        argv:
+          - kubectl
+          - config
+          - set-credentials
+          - admin
+          - --client-certificate=admin.crt
+          - --client-key=admin.key
+          - --embed-certs=true
+        chdir: "{{ path_to_certs }}"
+
+    - name: Set kubectl context
+      ansible.builtin.command:
+        argv:
+          - kubectl
+          - config
+          - set-context
+          - kubernetes-the-hard-way
+          - --cluster=kubernetes-the-hard-way
+          - --user=admin
+        chdir: "{{ path_to_certs }}"
+
+    - name: Use kubectl context
+      ansible.builtin.command:
+        argv:
+          - kubectl
+          - config
+          - use-context
+          - kubernetes-the-hard-way
+        chdir: "{{ path_to_certs }}"
+

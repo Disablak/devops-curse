@@ -4,4 +4,5 @@
 # - import_playbook: 06-generate-data-enc-config-and-key.yaml
 # - import_playbook: 07-bootstrapping-etcd.yaml
 # - import_playbook: 08-bootstrapping-kubernetes-controllers.yaml
-- import_playbook: 09-bootstrapping-kubernetes-worker-nodes.yaml
+# - import_playbook: 09-bootstrapping-kubernetes-worker-nodes.yaml
+- import_playbook: 10-configuring-kubectl.yaml
