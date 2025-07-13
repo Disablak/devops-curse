@@ -102,3 +102,9 @@
     - kube-apiserver
     - kube-controller-manager
     - kube-scheduler
+
+- name: Apply kube-apiserver-to-kubelet.yaml
+  kubernetes.core.k8s:
+    state: present
+    src: /kube-apiserver-to-kubelet.yaml
+    kubeconfig: /admin.kubeconfig
