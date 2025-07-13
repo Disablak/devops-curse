@@ -1,0 +1,40 @@
+- name: Template and Copy 10-bridge.conf
+  ansible.builtin.template:
+    src: templates/10-bridge.conf.j2
+    dest: "/10-bridge.conf"
+    mode: '744'
+
+- name: Copy kubelet-config.yaml
+  ansible.builtin.copy:
+    src: "./../kubernetes-the-hard-way/configs/kubelet-config.yaml"
+    dest: "/"
+    owner: root
+    group: root
+    mode: '0744'
+
+# MOVE THIS TO ANOTHER PLACE
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: yes
+
+- name: Install required packages
+  ansible.builtin.apt:
+    name:
+      - socat
+      - conntrack
+      - ipset
+      - kmod
+    state: present
+
+- name: Ensure folders exist
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: '0755'
+  loop:
+    - /etc/cni/net.d
+    - /opt/cni/bin
+    - /var/lib/kubelet
+    - /var/lib/kube-proxy
+    - /var/lib/kubernetes
+    - /var/run/kubernetes

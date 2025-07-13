@@ -1,0 +1,137 @@
+- name: Copy binaries
+  hosts: nodes
+  become: true
+  roles:
+    - role: copy-kube-binaries-to-nodes
+
+- name: Copy files
+  hosts: nodes
+  become: true
+  roles:
+    - role: copy-many-files
+      vars:
+        target_path: "/"
+        files:
+          - "./../kubernetes-the-hard-way/downloads/worker/"
+          - "./../kubernetes-the-hard-way/downloads/client/kubectl"
+          - "./../kubernetes-the-hard-way/configs/99-loopback.conf"
+          - "./../kubernetes-the-hard-way/configs/containerd-config.toml"
+          - "./../kubernetes-the-hard-way/configs/kube-proxy-config.yaml"
+          - "./../kubernetes-the-hard-way/units/containerd.service"
+          - "./../kubernetes-the-hard-way/units/kubelet.service"
+          - "./../kubernetes-the-hard-way/units/kube-proxy.service"
+
+    - role: copy-many-files
+      vars:
+        target_path: "/cni-plugins/"
+        files:
+          - "./../kubernetes-the-hard-way/downloads/cni-plugins/"
+
+    - role: copy-many-files-remote
+      vars:
+        target_path: "/usr/local/bin/"
+        files:
+          - "/crictl"
+          - "/kube-proxy"
+          - "/kubelet"
+          - "/runc"
+
+    - role: copy-many-files-remote
+      vars:
+        target_path: "/bin/"
+        files:
+          - "/containerd"
+          - "/containerd-shim-runc-v2"
+          - "/containerd-stress"
+
+# Configure CNI Networking
+    - role: copy-many-files-remote
+      vars:
+        target_path: "/etc/cni/net.d/"
+        files:
+          - "/10-bridge.conf"
+          - "/99-loopback.conf"
+
+  tasks:
+    - name: Load br-netfilter module
+      ansible.builtin.modprobe:
+        name: br-netfilter
+        state: present
+
+    - name: Ensure br-netfilter is in /etc/modules-load.d/modules.conf
+      ansible.builtin.lineinfile:
+        path: /etc/modules-load.d/modules.conf
+        line: "br-netfilter"
+        create: yes
+
+    - name: Configure sysctl for Kubernetes networking
+      ansible.builtin.copy:
+        dest: /etc/sysctl.d/kubernetes.conf
+        content: |
+          net.bridge.bridge-nf-call-iptables = 1
+          net.bridge.bridge-nf-call-ip6tables = 1
+        owner: root
+        group: root
+        mode: '0744'
+
+    - name: Apply sysctl settings
+      ansible.builtin.command: sysctl -p /etc/sysctl.d/kubernetes.conf
+
+# Configure containerd
+    - name: Ensure folder exist
+      ansible.builtin.file:
+        path: "/etc/containerd/"
+        state: directory
+        mode: '0755'
+
+    - name: Copy files
+      ansible.builtin.copy:
+        src: "/containerd-config.toml"
+        dest: "/etc/containerd/config.toml"
+        owner: root
+        group: root
+        mode: '0744'
+        remote_src: true
+
+- name: Copy files
+  hosts: nodes
+  become: true
+  roles:
+    - role: copy-many-files-remote
+      vars:
+        target_path: "/etc/systemd/system/"
+        files:
+          - "/containerd.service"
+
+# Configure the Kubelet
+    - role: copy-many-files-remote
+      vars:
+        target_path: "/var/lib/kubelet/"
+        files:
+          - "/kubelet-config.yaml"
+
+    - role: copy-many-files-remote
+      vars:
+        target_path: "/etc/systemd/system/"
+        files:
+          - "/kubelet.service"
+
+# Configure the Kubernetes Proxy
+    - role: copy-many-files-remote
+      vars:
+        target_path: "/var/lib/kube-proxy/"
+        files:
+          - "/kube-proxy-config.yaml"
+
+    - role: copy-many-files-remote
+      vars:
+        target_path: "/etc/systemd/system/"
+        files:
+          - "/kube-proxy.service"
+
+    - role: reload-enable-start
+      vars:
+        items:
+          - containerd
+          - kubelet
+          - kube-proxy
