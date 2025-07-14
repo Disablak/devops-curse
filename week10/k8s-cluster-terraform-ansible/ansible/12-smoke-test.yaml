@@ -1,0 +1,76 @@
+- name: Copy binaries
+  hosts: jumpbox
+  become: true
+  vars:
+    kubeconfig_path: "./certs/admin.kubeconfig"
+  tasks:
+    - name: Check if API server is reachable
+      kubernetes.core.k8s_info:
+        api_version: v1
+        kind: Namespace
+        kubeconfig: "{{ kubeconfig_path }}"
+      register: api_result
+
+    - name: Fail if API server is unreachable
+      ansible.builtin.fail:
+        msg: "Cannot connect to the Kubernetes API"
+      when: api_result.resources is not defined
+
+    - name: Get node list
+      kubernetes.core.k8s_info:
+        api_version: v1
+        kind: Node
+        kubeconfig: "{{ kubeconfig_path }}"
+      register: nodes_info
+
+    - name: Check node readiness
+      ansible.builtin.set_fact:
+        not_ready_nodes: >-
+          {{
+            nodes_info.resources
+            | selectattr('status.conditions', 'defined')
+            | selectattr('status.conditions', 'selectattr', 'type', 'equalto', 'Ready')
+            | selectattr('status.conditions', 'selectattr', 'status', 'ne', 'True')
+            | map(attribute='metadata.name')
+            | list
+          }}
+
+    - name: Fail if any node is not Ready
+      ansible.builtin.fail:
+        msg: "Some nodes are not Ready: {{ not_ready_nodes }}"
+      when: not_ready_nodes | length > 0
+
+    - name: Deploy test nginx pod
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Pod
+          metadata:
+            name: test-nginx
+          spec:
+            containers:
+            - name: nginx
+              image: nginx
+              ports:
+              - containerPort: 80
+        kubeconfig: "{{ kubeconfig_path }}"
+
+    - name: Wait for test pod to be Running
+      kubernetes.core.k8s_info:
+        api_version: v1
+        kind: Pod
+        name: test-nginx
+        kubeconfig: "{{ kubeconfig_path }}"
+      register: pod_info
+      until: pod_info.resources[0].status.phase == "Running"
+      retries: 10
+      delay: 5
+
+    - name: Delete test nginx pod
+      kubernetes.core.k8s:
+        state: absent
+        api_version: v1
+        kind: Pod
+        name: test-nginx
+        kubeconfig: "{{ kubeconfig_path }}"
