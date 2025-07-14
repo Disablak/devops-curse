@@ -1,0 +1,62 @@
+- name: Copy binaries
+  hosts: jumpbox
+  become: true
+  vars:
+  tasks:
+    - name: Read machines.txt
+      ansible.builtin.slurp:
+        src: machines.txt
+      register: machines_file
+      delegate_to: localhost
+
+    - name: Parse lines into list
+      set_fact:
+        machines_lines: "{{ machines_file.content | b64decode | split('\n') | select('match', '.+') | list }}"
+
+    - name: Find server line
+      set_fact:
+        server_line: "{{ machines_lines | select('search', ' server$') | list | first | default('') }}"
+        node_0_line: "{{ machines_lines | select('search', ' node-0 ') | list | first | default('') }}"
+        node_1_line: "{{ machines_lines | select('search', ' node-1 ') | list | first | default('') }}"
+
+    - name: Parse fields
+      set_fact:
+        server_ip: "{{ server_line.split()[0] }}"
+        node_0_ip: "{{ node_0_line.split()[0] }}"
+        node_0_subnet: "{{ (node_0_line.split() | length > 3) | ternary(node_0_line.split()[3], '') }}"
+        node_1_ip: "{{ node_1_line.split()[0] }}"
+        node_1_subnet: "{{ (node_1_line.split() | length > 3) | ternary(node_1_line.split()[3], '') }}"
+
+    - name: Add host vars to server
+      add_host:
+        name: server
+        server_ip: "{{ server_ip }}"
+        node_0_ip: "{{ node_0_ip }}"
+        node_0_subnet: "{{ node_0_subnet }}"
+        node_1_ip: "{{ node_1_ip }}"
+        node_1_subnet: "{{ node_1_subnet }}"
+
+- name: Add routes at server
+  hosts: server
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Debug values
+      debug:
+        msg:
+          - "Server IP: {{ server_ip }}"
+          - "Node 0 IP: {{ node_0_ip }}"
+          - "Node 0 Subnet: {{ node_0_subnet }}"
+          - "Node 1 IP: {{ node_1_ip }}"
+          - "Node 1 Subnet: {{ node_1_subnet }}"
+
+    - name: Add routes on server
+      ansible.builtin.command: "ip route add {{ node_0_subnet }} via {{ node_0_ip }}"
+      #when: node_0_subnet is defined and node_0_ip is defined
+      delegate_to: server
+
+    - name: Add routes on server
+      ansible.builtin.command: "ip route add {{ node_1_subnet }} via {{ node_1_ip }}"
+      #when: node_1_subnet is defined and node_1_ip is defined
+      delegate_to: server
+    
