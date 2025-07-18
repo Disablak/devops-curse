@@ -15,3 +15,13 @@ config:
   PORT: "5432"
   DB_USER: "postgres"
   DB_NAME: "dbk8s"
+
+hpa:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 4
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+ingress:
+  enabled: true
