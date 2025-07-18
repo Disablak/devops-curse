@@ -1,0 +1,11 @@
+kind: ClusterConfig
+apiVersion: eksctl.io/v1alpha5
+
+metadata:
+  name: my-k8s-cluster
+  region: us-east-1
+  version: "1.33"
+
+nodeGroups:
+  - name: ng-1
+    desiredCapacity: 2

@@ -1,0 +1,17 @@
+replicaCount: 2
+host: back2.cloud
+email: verchinskiymax@gmail.com
+
+image:
+  imageName: 104280348236.dkr.ecr.us-east-1.amazonaws.com/disablak/django-app:latest
+  imagePullPolicy: IfNotPresent
+
+config:
+  DEBUG: "True"
+  DEVELOPMENT_MODE: "True"
+  CSRF_TRUSTED_ORIGINS: "http://*"
+  DJANGO_ALLOWED_HOSTS: "*"
+  HOST: "database-k8s.csfeacmg6tz7.us-east-1.rds.amazonaws.com"
+  PORT: "5432"
+  DB_USER: "postgres"
+  DB_NAME: "dbk8s"
