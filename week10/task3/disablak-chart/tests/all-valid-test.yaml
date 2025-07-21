@@ -1,0 +1,23 @@
+suite: Chart renders successfully with default values
+
+tests:
+  - it: should render all templates except roles
+    templates:
+      - deployment.yaml
+      - configmap.yaml
+      - hpa.yaml
+      - ingress.yaml
+      - secrets.yaml
+      - service.yaml
+    values:
+      - ./../values.yaml
+    asserts:
+      - hasDocuments:
+          count: 1
+
+  - it: should render roles
+    templates:
+      - roles.yaml
+    asserts:
+      - hasDocuments:
+          count: 7

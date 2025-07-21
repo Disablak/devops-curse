@@ -16,6 +16,9 @@ config:
   DB_USER: "postgres"
   DB_NAME: "dbk8s"
 
+secret:
+  DB_PASSWORD: testpass
+
 hpa:
   enabled: true
   minReplicas: 2
