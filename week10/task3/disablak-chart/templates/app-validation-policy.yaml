@@ -1,0 +1,29 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: container-env-validation
+spec:
+  validationFailureAction: Audit
+  background: true
+  rules:
+    - name: env-or-envfrom
+      match:
+        any:
+          - resources:
+              kinds:
+                - Deployment
+      validate:
+        message: "Either env or envFrom should be set in a container, not both."
+        anyPattern:
+          - spec:
+              template:
+                spec:
+                  containers:
+                    - env: '?*'
+                      X(envFrom):
+          - spec:
+              template:
+                spec:
+                  containers:
+                    - X(env):
+                      envFrom: '?*'
