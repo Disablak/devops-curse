@@ -1,0 +1,98 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "required": [
+        "replicaCount",
+        "image",
+        "config",
+        "secret",
+        "hpa",
+        "ingress"
+    ],
+    "properties": {
+        "replicaCount": {
+            "type": "integer",
+            "minimum": 1
+        },
+        "image": {
+            "type": "object",
+            "required": [
+                "imageName",
+                "imagePullPolicy"
+            ],
+            "properties": {
+                "imageName": {
+                    "type": "string"
+                },
+                "imagePullPolicy": {
+                    "type": "string",
+                    "enum": ["Always", "IfNotPresent"]
+                }
+            }
+        },
+        "config": {
+            "type": "object",
+            "required": [
+                "DEBUG",
+                "DEVELOPMENT_MODE",
+                "HOST",
+                "PORT",
+                "DB_USER",
+                "DB_NAME"
+            ],
+            "properties": {
+                "DEBUG": {
+                    "type": "string"
+                },
+                "DEVELOPMENT_MODE": {
+                    "type": "string"
+                },
+                "HOST": {
+                    "type": "string"
+                },
+                "PORT": {
+                    "type": "string"
+                },
+                "DB_USER": {
+                    "type": "string"
+                },
+                "DB_NAME": {
+                    "type": "string"
+                }
+            }
+        },
+        "secret": {
+            "type": "object",
+            "required": [
+                "DB_PASSWORD"
+            ],
+            "properties": {
+                "DB_PASSWORD": {
+                    "type": "string"
+                }
+            }
+        },
+        "hpa": {
+            "type": "object",
+            "required": [
+                "enabled"
+            ],
+            "properties": {
+                "enabled": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "ingress": {
+            "type": "object",
+            "required": [
+                "enabled"
+            ],
+            "properties": {
+                "enabled": {
+                    "type": "boolean"
+                }
+            }
+        }
+    }
+}
