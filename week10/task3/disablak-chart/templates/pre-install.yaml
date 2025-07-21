@@ -1,0 +1,29 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ .Release.Name }}-check-db"
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: check-db
+          image: postgres:17
+          env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.name }}
+                  key: DB_PASSWORD
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo "Checking PostgreSQL connection..."
+              until pg_isready -h {{ .Values.config.HOST }} -p {{ .Values.config.PORT }} -U {{ .Values.config.DB_USER }}; do
+                echo "Waiting for DB to become available..."
+                sleep 1
+              done
+              echo "PostgreSQL is ready!"
